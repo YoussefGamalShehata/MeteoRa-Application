@@ -1,8 +1,8 @@
 package com.example.meteora.model
 
-data class Root(
+data class Weather(
     val coord: Coord,
-    val weather: List<Weather>,
+    val weather: List<WeatherParam>,
     val base: String,
     val main: Main,
     val visibility: Long,
@@ -21,7 +21,7 @@ data class Coord(
     val lat: Double,
 )
 
-data class Weather(
+data class WeatherParam(
     val id: Long,
     val main: String,
     val description: String,

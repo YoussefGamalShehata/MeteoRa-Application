@@ -1,14 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.homescreen.view.HomeFragment">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Weather Icon -->
+    <ImageView
+        android:id="@+id/weatherIconImageView"
+        android:layout_width="183dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/weather_icon" />
+
+    <!-- Current Temperature -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/tempTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temperature"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:paddingTop="8dp" />
 
-</FrameLayout>
+    <!-- Weather Description -->
+    <TextView
+        android:id="@+id/weatherDescriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingTop="4dp"
+        android:text="@string/weatherdescribtion"
+        android:textSize="18sp" />
+
+    <!-- Current Date and Time -->
+    <TextView
+        android:id="@+id/dateTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date_Time"
+        android:textSize="16sp"
+        android:layout_gravity="center"
+        android:paddingTop="8dp" />
+
+    <!-- Humidity -->
+    <TextView
+        android:id="@+id/humidityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Humidity: 50%"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <!-- Wind Speed -->
+    <TextView
+        android:id="@+id/windSpeedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wind Speed: 10 km/h"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <!-- Pressure -->
+    <TextView
+        android:id="@+id/pressureTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pressure: 1013 hPa"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <!-- Clouds -->
+    <TextView
+        android:id="@+id/cloudsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cloudiness: 20%"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <!-- Past Hourly Weather -->
+    <TextView
+        android:id="@+id/pastHourlyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Past Hourly Weather"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <!-- Placeholder for hourly weather data -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hourlyWeatherRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Forecast for the next 5 days -->
+    <TextView
+        android:id="@+id/fiveDayForecastTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5-Day Forecast"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp" />
+
+    <!-- Placeholder for 5-day weather forecast data -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fiveDayForecastRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
