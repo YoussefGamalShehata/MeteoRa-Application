@@ -2,7 +2,7 @@ package com.example.meteora.model
 
 data class Weather(
     val coord: Coord,
-    val weather: List<WeatherParam>,
+    val weatherParam: List<WeatherParam>,
     val base: String,
     val main: Main,
     val visibility: Long,

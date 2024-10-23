@@ -1,5 +1,6 @@
 package com.example.meteora
 
+import HomeFragment
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.meteora.features.alarm.view.AlarmFragment
 import com.example.meteora.features.favorites.view.FavoriteFragment
-import com.example.meteora.features.homescreen.view.HomeFragment
 import com.example.meteora.features.settings.view.SettingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 

@@ -1,37 +1,28 @@
 package com.example.meteora.db.repository
 
-import com.example.meteora.db.local.LocalDataSource
 import com.example.meteora.db.remote.RemoteDataSource
-import com.example.meteora.helpers.Constants
 import com.example.meteora.model.Weather
-import com.example.meteora.network.ApiState
+import com.example.meteora.network.ApiClient
+import com.example.meteora.network.RemoteDataSourceImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.Response
 
 class RepositoryImpl(
-    private val remoteDataSource: RemoteDataSource,
-    private val localDataSource: LocalDataSource): Repository {
-    override fun fetchCurrentWeather(lat: Double, lon: Double): Flow<ApiState> {
-        return flow {
-            emit(ApiState.Loading) // Emit loading state
-            try {
-                // Make API call
-                val response: Response<Weather> = remoteDataSource.getCurrentWeather(lat, lon,
-                    Constants.UNITS)
+    private val remoteDataSource: RemoteDataSource
+) : Repository {
 
-                // Check if response is successful and emit appropriate ApiState
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        emit(ApiState.Success(it)) // Emit success with the weather data
-                    } ?: emit(ApiState.Failure("Response body is null"))
-                } else {
-                    emit(ApiState.Failure("Error: ${response.message()}")) // Emit failure with the error message
-                }
-            } catch (e: Exception) {
-                emit(ApiState.Failure(e.message ?: "Unknown error occurred")) // Emit failure with exception message
+    override fun fetchCurrentWeather(lat: Double, lon: Double, units: String): Flow<Weather> = flow {
+        val response = remoteDataSource.getCurrentWeather(lat, lon, units)
+
+        if (response.isSuccessful) {
+            response.body()?.let { weather ->
+                emit(weather)  // Emit the weather data
+            } ?: run {
+                throw Exception("Weather data is null")  // Handle the null case
             }
+        } else {
+            throw Exception("Failed to fetch weather data: ${response.errorBody()?.string()}")
         }
     }
-    //private val localDataSource: LocalDataSource
+
 }
