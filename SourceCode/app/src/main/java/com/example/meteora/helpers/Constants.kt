@@ -4,7 +4,7 @@ object Constants {
     const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
     const val API_KEY = "8e05d4d97944156ecbd0645bf68e7826"
     const val UNITS = "metric"
-  /*  const val ALARM_CHANNEL_ID = "ALARM_CHANNEL"
+   const val ALARM_CHANNEL_ID = "ALARM_CHANNEL"
     const val LANGUAGE_SHARED = "Language"
     const val TEMP_UNIT_SHARED = "TempUnit"
     const val WIND_SPEED_UNIT_SHARED = "wind_speed_unit"
@@ -24,6 +24,6 @@ object Constants {
     const val ENGLISH_SHARED = "en"
     const val ARABIC_SHARED = "ar"
     const val CURRENT_DEVICE_LAT_LANG = "current_lan_lat"
-    const val ALARM_ID_TO_DISMISS = "ALARM_ID"*/
+    const val ALARM_ID_TO_DISMISS = "ALARM_ID"
 
 }
