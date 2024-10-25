@@ -103,8 +103,8 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-         viewModel.fetchCurrentWeather(38.7946, 106.5348, "metric", "ar")
-       // viewModel.fetchForecast(38.7946, 106.5348, "metric", "en")
+       //  viewModel.fetchCurrentWeather(38.7946, 106.5348, "metric", "ar")
+        viewModel.fetchForecast(38.7946, 106.5348, "metric", "en")
     }
 
 
