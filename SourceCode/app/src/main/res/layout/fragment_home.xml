@@ -99,7 +99,7 @@
 
     <!-- Placeholder for hourly weather data -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/hourlyWeatherRecyclerView"
+        android:id="@+id/hourlyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"/>
@@ -116,7 +116,7 @@
 
     <!-- Placeholder for 5-day weather forecast data -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/fiveDayForecastRecyclerView"
+        android:id="@+id/dailyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"/>
