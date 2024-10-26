@@ -29,47 +29,38 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
     val forcasterror: StateFlow<String?> get() = _forcasterror
 
     fun fetchCurrentWeather(lat: Double, lon: Double, units: String, lang: String) {
-        _weatherData.value = ApiState.Loading // Set loading state
+        _weatherData.value = ApiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Fetch the weather data from the repository
                 val weather = repository.fetchCurrentWeather(lat, lon, units, lang).first()
-
-                // Set success state with weather data
                 _weatherData.value = ApiState.Success(weather)
             } catch (e: Exception) {
-                // Handle error and update states
                 handleError(e)
             }
         }
     }
 
     fun fetchForecast(lat: Double, lon: Double, units: String, lang: String) {
-        _forcastData.value = ApiState.Loading // Set loading state
+        _forcastData.value = ApiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Fetch the forecast data from the repository
                 val forecast = repository.fetchForecast(lat, lon, units, lang).first()
 
-                // Set success state with forecast data
                 _forcastData.value = ApiState.Success(forecast)
             } catch (e: Exception) {
-                // Handle error and update states
                 handleForecastError(e)
             }
         }
     }
 
     private fun handleError(exception: Exception) {
-        // Set failure state with error message
         _weatherData.value = ApiState.Failure(exception.message ?: "An error occurred")
-        _weathererror.value = exception.message // Update error value for UI
+        _weathererror.value = exception.message
     }
 
     private fun handleForecastError(exception: Exception) {
         Log.i("fff", "handleError: kekekeke ")
-        // Set failure state with error message
         _forcastData.value = ApiState.Failure(exception.message ?: "An error occurred")
-        _forcasterror.value = exception.message // Update error value for UI
+        _forcasterror.value = exception.message
     }
 }

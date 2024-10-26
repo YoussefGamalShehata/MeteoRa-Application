@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.meteora.R
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
+import com.example.meteora.features.map.view.MapFragment
 import com.example.meteora.model.DailyForecast
 import com.example.meteora.model.Forcast
 import com.example.meteora.model.HourlyWeatherData
@@ -44,6 +45,7 @@ class HomeFragment : Fragment() {
     private lateinit var cloudsTextView: TextView
     private lateinit var dateTimeTextView: TextView
     private lateinit var cityNameTextView: TextView
+    private lateinit var chooseLocationButton: Button
 
     private lateinit var hourlyRecyclerView: RecyclerView
     private lateinit var dailyRecyclerView: RecyclerView
@@ -68,6 +70,7 @@ class HomeFragment : Fragment() {
         cloudsTextView = view.findViewById(R.id.cloudsTextView)
         dateTimeTextView = view.findViewById(R.id.dateTimeTextView)
         cityNameTextView = view.findViewById(R.id.cityNameTextView)
+        chooseLocationButton = view.findViewById(R.id.chooseLocationButton)
 
 
 
@@ -84,26 +87,22 @@ class HomeFragment : Fragment() {
         hourlyRecyclerView.adapter = hourlyWeatherAdapter
         dailyRecyclerView.adapter = dailyWeatherAdapter
 
-        // Initialize ViewModel and FusedLocationProviderClient
         val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit)))
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        // Check and request location permission
+        chooseLocationButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, MapFragment())
+                .addToBackStack(null)
+                .commit()
+        }
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission()
         } else {
-            // Permission already granted, proceed with location-based functionality
             fetchLocationAndInitializeWeatherData()
         }
-//        mapButton.setOnClickListener {
-//            // Replace the current Fragment with MapFragment
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, MapFragment())
-//                .addToBackStack(null)
-//                .commit()
-//        }
 
         return view
     }
@@ -122,7 +121,6 @@ class HomeFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with location-based functionality
                 fetchLocationAndInitializeWeatherData()
             } else {
                 Toast.makeText(requireContext(), "Location permission is required", Toast.LENGTH_SHORT).show()
@@ -134,7 +132,6 @@ class HomeFragment : Fragment() {
     private fun fetchLocationAndInitializeWeatherData() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                // Pass location data to fetchForecast
                 initializeWeatherData(location.latitude, location.longitude)
             } else {
                 Toast.makeText(requireContext(), "Unable to get location", Toast.LENGTH_SHORT).show()
@@ -185,9 +182,8 @@ class HomeFragment : Fragment() {
                                     )
                                 }
 
-                                // Process daily data for the 5-day forecast
                                 val dailyData = data.list.groupBy { forecast ->
-                                    forecast.dtTxt.substring(0, 10) // Group by date part of dtTxt
+                                    forecast.dtTxt.substring(0, 10)
                                 }.values.take(5).map { dayForecasts ->
                                     val firstForecast = dayForecasts[0]
                                     DailyForecast(
@@ -221,6 +217,7 @@ class HomeFragment : Fragment() {
         cloudsTextView.visibility = View.GONE
         dateTimeTextView.visibility = View.GONE
         cityNameTextView.visibility = View.GONE
+        chooseLocationButton.visibility = View.GONE
     }
 
     private fun showWeatherViews() {
@@ -232,5 +229,6 @@ class HomeFragment : Fragment() {
         cloudsTextView.visibility = View.VISIBLE
         dateTimeTextView.visibility = View.VISIBLE
         cityNameTextView.visibility = View.VISIBLE
+        chooseLocationButton.visibility = View.VISIBLE
     }
 }
