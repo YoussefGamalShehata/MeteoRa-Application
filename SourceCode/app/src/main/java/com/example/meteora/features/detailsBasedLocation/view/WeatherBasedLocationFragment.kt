@@ -138,15 +138,15 @@ class WeatherBasedLocationFragment : DialogFragment() {
         cityNameTextView.visibility = View.VISIBLE
     }
 
-    companion object {
-        fun newInstance(latitude: Double, longitude: Double): WeatherBasedLocationFragment {
-            val fragment = WeatherBasedLocationFragment()
-            val args = Bundle()
-            args.putDouble("latitude", latitude)
-            args.putDouble("longitude", longitude)
-            fragment.arguments = args
-            return fragment
-        }
-    }
+//    companion object {
+//        fun newInstance(latitude: Double, longitude: Double): WeatherBasedLocationFragment {
+//            val fragment = WeatherBasedLocationFragment()
+//            val args = Bundle()
+//            args.putDouble("latitude", latitude)
+//            args.putDouble("longitude", longitude)
+//            fragment.arguments = args
+//            return fragment
+//        }
+//    }
 
 }
