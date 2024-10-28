@@ -55,6 +55,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1") // Check for the latest version
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

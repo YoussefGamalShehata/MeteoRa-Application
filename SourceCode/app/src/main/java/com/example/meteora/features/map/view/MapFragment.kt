@@ -7,13 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.meteora.R
+import com.example.meteora.features.detailsBasedLocation.view.WeatherBasedLocationFragment
 import com.example.meteora.features.map.viewModel.LocationViewModel
 import com.example.meteora.features.map.viewModel.LocationViewModelFactory
-import com.example.meteora.features.detailsBasedLocation.view.WeatherBasedLocationFragment // Import your WeatherDialogFragment
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -35,6 +37,9 @@ class MapFragment : Fragment() {
     }
 
     private var selectedMarker: Marker? = null
+    private lateinit var showWeatherDetailsButton: Button
+    private lateinit var addToFavoriteButton: Button
+    private lateinit var actionButtonsLayout: LinearLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +48,9 @@ class MapFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         mapView = view.findViewById(R.id.map_view)
         searchBar = view.findViewById(R.id.search_bar)
+        showWeatherDetailsButton = view.findViewById(R.id.showWeatherDetailsButton)
+        addToFavoriteButton = view.findViewById(R.id.addToFavoritesButton)
+        actionButtonsLayout = view.findViewById(R.id.action_buttons_layout)
 
         // Initialize Geocoder
         geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -59,12 +67,26 @@ class MapFragment : Fragment() {
         setupMapTapListener()
         setupSearchListener()
 
+        // Set click listeners for buttons
+        showWeatherDetailsButton.setOnClickListener {
+            selectedMarker?.let {
+                actionButtonsLayout.visibility = View.GONE
+                showWeatherDialog(it.position)
+            }
+        }
+
+        addToFavoriteButton.setOnClickListener {
+            // Logic to add to favorites (not implemented yet)
+            actionButtonsLayout.visibility = View.GONE
+            Toast.makeText(context, "Added to favorites (future work)", Toast.LENGTH_SHORT).show()
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             locationViewModel.selectedLocation.collect { location ->
                 location?.let {
                     addMarkerAtLocation(it)
                     zoomToLocation(it)
-                    showWeatherDialog(it)
+                    showButtons()
                 }
             }
         }
@@ -79,7 +101,10 @@ class MapFragment : Fragment() {
                     locationViewModel.updateSelectedLocation(it)
                     zoomToLocation(it)
                     Toast.makeText(context, "Selected Lat: ${it.latitude}, Lon: ${it.longitude}", Toast.LENGTH_SHORT).show()
-                    showWeatherDialog(it)
+                    addMarkerAtLocation(it)
+
+                    // Show buttons when a location is tapped
+                    showButtons()
                 }
                 return true
             }
@@ -96,8 +121,12 @@ class MapFragment : Fragment() {
     private fun setupSearchListener() {
         searchBar.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
-                val locationName = searchBar.text.toString()
-                searchLocationByName(locationName)
+                val locationName = searchBar.text.toString().trim()
+                if (locationName.isNotEmpty()) {
+                    fetchLocationByName(locationName)
+                } else {
+                    Toast.makeText(context, "Please enter a location name", Toast.LENGTH_SHORT).show()
+                }
                 true
             } else {
                 false
@@ -105,21 +134,32 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun searchLocationByName(locationName: String) {
-        try {
-            val addressList = geocoder.getFromLocationName(locationName, 1)
-            if (addressList != null && addressList.isNotEmpty()) {
-                val address = addressList[0]
-                val geoPoint = GeoPoint(address.latitude, address.longitude)
-                locationViewModel.updateSelectedLocation(geoPoint)
-                zoomToLocation(geoPoint)
-                Toast.makeText(context, "Found: $locationName", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Location not found", Toast.LENGTH_SHORT).show()
+    private fun fetchLocationByName(locationName: String) {
+        lifecycleScope.launch {
+            try {
+                val addressList = geocoder.getFromLocationName(locationName, 1)
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    val geoPoint = GeoPoint(address.latitude, address.longitude)
+
+                    // Update ViewModel with the new location
+                    locationViewModel.updateSelectedLocation(geoPoint)
+
+                    // Add marker and zoom into location
+                    addMarkerAtLocation(geoPoint)
+                    zoomToLocation(geoPoint)
+
+                    // Show buttons
+                    showButtons()
+
+                    Toast.makeText(context, "Found location: $locationName", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Location not found", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Error retrieving location", Toast.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Error finding location", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -140,6 +180,10 @@ class MapFragment : Fragment() {
     private fun zoomToLocation(location: GeoPoint) {
         mapView.controller.setCenter(location)
         mapView.controller.setZoom(19.5)
+    }
+
+    private fun showButtons() {
+        actionButtonsLayout.visibility = View.VISIBLE // Show the buttons layout
     }
 
     private fun showWeatherDialog(location: GeoPoint) {

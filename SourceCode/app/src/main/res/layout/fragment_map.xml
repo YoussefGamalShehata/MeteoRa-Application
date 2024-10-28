@@ -5,30 +5,49 @@
     android:layout_height="match_parent"
     tools:context=".features.map.view.MapFragment">
 
-    <!-- Search bar at the top -->
+    <!-- MapView filling the entire screen -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Search bar overlayed on top of the MapView, full width of FrameLayout -->
     <EditText
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter country name"
-        android:padding="16dp"
+        android:layout_marginTop="50dp"
         android:background="@android:color/white"
         android:elevation="4dp"
-        android:layout_gravity="top"
-        android:layout_margin="8dp" />
+        android:hint="Enter location"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:padding="16dp" />
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/map_view"
+    <!-- Buttons for showing weather details and adding to favorites -->
+    <LinearLayout
+        android:id="@+id/action_buttons_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56dp" />
-
-    <Button
-        android:id="@+id/showWeatherDetailsButton"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show Weather Details"
-        android:visibility="gone"
-        android:layout_gravity="center" />
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="500dp"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:visibility="gone">
 
-</FrameLayout>
+        <Button
+            android:id="@+id/showWeatherDetailsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Weather Details" />
+
+        <Button
+            android:id="@+id/addToFavoritesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add to Favorite" />
+    </LinearLayout>
+
+    </FrameLayout>
