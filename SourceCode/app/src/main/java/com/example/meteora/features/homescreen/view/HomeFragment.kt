@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meteora.R
+import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
 import com.example.meteora.features.map.view.MapFragment
@@ -87,7 +88,7 @@ class HomeFragment : Fragment() {
         hourlyRecyclerView.adapter = hourlyWeatherAdapter
         dailyRecyclerView.adapter = dailyWeatherAdapter
 
-        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit)))
+        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 

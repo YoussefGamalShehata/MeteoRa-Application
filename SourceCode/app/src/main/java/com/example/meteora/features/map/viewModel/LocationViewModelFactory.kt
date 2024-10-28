@@ -2,12 +2,14 @@
 
     import androidx.lifecycle.ViewModel
     import androidx.lifecycle.ViewModelProvider
+    import com.example.meteora.db.local.LocalDataSourceImpl
+    import com.example.meteora.db.repository.RepositoryImpl
+    import com.example.meteora.network.RemoteDataSourceImpl
 
-    class LocationViewModelFactory : ViewModelProvider.Factory {
+    class LocationViewModelFactory(private val repositoryImpl: RepositoryImpl) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return LocationViewModel() as T
+                return LocationViewModel(repositoryImpl) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -1,24 +1,39 @@
 package com.example.meteora.model
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import kotlin.collections.List
-
+@Entity(tableName = "forecast_table")
 data class Forcast(
+    @PrimaryKey(autoGenerate = true)
+    val key: Int = 0,
     val cod: String,
     val message: Long,
     val cnt: Long,
+    @TypeConverters(ForecastConverters::class)
     val list: List<ForecastInfo>,
+    @Embedded
     val city: ForecastCity,
 )
 
 data class ForecastInfo(
     val dt: Long,
+    @Embedded
     val main: ForecastMain,
+    @Embedded
     val weather: List<ForecastWeather>,
+    @Embedded
     val clouds: ForecastClouds,
+    @Embedded
     val wind: ForecastWind,
     val visibility: Long,
     val pop: Double,
+    @Embedded
     val rain: ForecastRain?,
+    @Embedded
     val sys: ForecastSys,
     @SerializedName("dt_txt")
     val dtTxt: String,
@@ -71,6 +86,7 @@ data class ForecastSys(
 data class ForecastCity(
     val id: Long,
     val name: String,
+    @Embedded
     val coord: ForecastCoord,
     val country: String,
     val population: Long,

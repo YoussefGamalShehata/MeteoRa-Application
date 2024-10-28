@@ -1,7 +1,6 @@
-package com.example.meteora.features.detailsBasedLocation.view
+package com.example.meteora.features.map.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.meteora.R
+import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
 import com.example.meteora.model.Forcast
@@ -49,7 +49,7 @@ class WeatherBasedLocationFragment : DialogFragment() {
         }
 
         // Initialize ViewModel
-        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit)))
+        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
     }
 
@@ -137,16 +137,5 @@ class WeatherBasedLocationFragment : DialogFragment() {
         dateTimeTextView.visibility = View.VISIBLE
         cityNameTextView.visibility = View.VISIBLE
     }
-
-//    companion object {
-//        fun newInstance(latitude: Double, longitude: Double): WeatherBasedLocationFragment {
-//            val fragment = WeatherBasedLocationFragment()
-//            val args = Bundle()
-//            args.putDouble("latitude", latitude)
-//            args.putDouble("longitude", longitude)
-//            fragment.arguments = args
-//            return fragment
-//        }
-//    }
 
 }

@@ -57,7 +57,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1") // Check for the latest version
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
