@@ -20,9 +20,8 @@ class RepositoryImpl(
         val response = remoteDataSource.getCurrentWeather(lat, lon, units,lang)
 
         if (response.isSuccessful) {
-            //Log.i("EL JOKES", "fetchCurrentWeather: ${response.body()?.weatherParam?.get(0)?.description} ")
             response.body()?.let { weather ->
-                emit(weather)  // Emit the weather data
+                emit(weather)
             } ?: run {
                 throw Exception("Weather data is null")  // Handle the null case
             }

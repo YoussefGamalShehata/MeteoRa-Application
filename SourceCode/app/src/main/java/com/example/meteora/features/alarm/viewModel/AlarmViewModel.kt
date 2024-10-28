@@ -5,117 +5,110 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.meteora.features.alarm.broadcastReceiver.AlarmReceiver
 import com.example.meteora.model.Alarm
+import com.example.meteora.model.Weather
+import com.example.meteora.network.ApiState
+import com.example.meteora.ui.home.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
-class AlarmViewModel(private val context: Context) : ViewModel() {
+class AlarmViewModel(
+    private val context: Context,
+    private val homeViewModel: HomeViewModel
+) : ViewModel() {
 
+    private val sharedPrefs: SharedPreferences =
+        context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE)
+
+    // Holds the list of alarms
     private val _alarms = MutableStateFlow<List<Alarm>>(emptyList())
     val alarms: StateFlow<List<Alarm>> get() = _alarms
 
     init {
-        loadAlarms()
+        loadWeatherInfo()
     }
 
-    private fun loadAlarms() {
+    private fun loadWeatherInfo() {
         viewModelScope.launch {
-            val sharedPrefs = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE)
-            val savedAlarms = mutableListOf<Alarm>()
-
-            sharedPrefs.all.forEach { (key, time) ->
-                if (key.toLongOrNull() != null) {
-                    val id = key.toLong()
-                    val alarmTime = time.toString()
-                    val name = sharedPrefs.getString("${id}_name", "Alarm $id") ?: "Alarm $id" // Get the saved name or default
-                    savedAlarms.add(Alarm(id, name, alarmTime))
-                } else {
-                    Log.w("AlarmDebug", "Ignoring invalid alarm key: $key")
+            homeViewModel.weatherData.collect { apiState ->
+                if (apiState is ApiState.Success) {
+                    saveWeatherInfo(apiState.data)
                 }
             }
-
-            _alarms.value = savedAlarms
         }
     }
 
-
-    fun addAlarm(alarm: Alarm) {
-        viewModelScope.launch {
-            _alarms.value = _alarms.value + alarm
-            saveAlarm(alarm)
-        }
-    }
-
-    fun removeAlarm(alarm: Alarm) {
-        viewModelScope.launch {
-            _alarms.value = _alarms.value.filter { it.id != alarm.id }
-            removeAlarmFromStorage(alarm)
-        }
-    }
-
-    private fun saveAlarm(alarm: Alarm) {
-        val sharedPrefs = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE)
+    private fun saveWeatherInfo(weather: Weather) {
         sharedPrefs.edit().apply {
-            putString(alarm.id.toString(), alarm.time)
-            putString("${alarm.id}_name", alarm.name) // Save the alarm name
+            putString("weather_temperature", "${weather.main.temp}°C")
+            putString("weather_description", weather.weather[0].description)
+            putString("weather_wind_speed", "Wind Speed: ${weather.wind.speed} m/s")
+            putString("weather_clouds", "Clouds: ${weather.clouds.all}%")
+            putString("weather_city_name", weather.name)
+
         }.apply()
     }
 
-
-    private fun removeAlarmFromStorage(alarm: Alarm) {
-        val sharedPrefs = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE)
-        sharedPrefs.edit().remove(alarm.id.toString()).apply()
+    fun addAlarm(alarm: Alarm) {
+        _alarms.value = _alarms.value + alarm
     }
 
+    // Remove an alarm from the list
+    fun removeAlarm(alarm: Alarm) {
+        _alarms.value = _alarms.value - alarm
+        cancelAlarm(alarm) // Also cancel the alarm when it's removed
+    }
+
+    // Schedule the alarm
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleAlarm(alarm: Alarm) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val alarmCalendar = Calendar.getInstance()
-        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
-        Log.d("AlarmDebug", "Setting alarm time: ${alarm.time}")
-
-        val alarmTime = sdf.parse(alarm.time)
-        if (alarmTime != null) {
-            alarmCalendar.set(Calendar.HOUR_OF_DAY, alarmTime.hours)
-            alarmCalendar.set(Calendar.MINUTE, alarmTime.minutes)
-            alarmCalendar.set(Calendar.SECOND, 0)
-            alarmCalendar.set(Calendar.MILLISECOND, 0)
-
-            if (alarmCalendar.timeInMillis <= System.currentTimeMillis()) {
-                alarmCalendar.add(Calendar.DAY_OF_YEAR, 1)  // Schedule for the next day
-            }
-
-            Log.d("AlarmDebug", "Scheduled alarm for: ${alarmCalendar.time}")
-            Log.d("AlarmDebug", "Current time: ${Date()}")
-
-            val intent = Intent(context, AlarmReceiver::class.java).apply {
-                putExtra("alarmName", alarm.name)
-            }
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarm.id.toInt(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                alarmCalendar.timeInMillis,
-                pendingIntent
-            )
-        } else {
-            Log.e("AlarmDebug", "Failed to parse alarm time: ${alarm.time}")
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra("ALARM_NAME", alarm.name)
+            putExtra("ALARM_TIME", alarm.time) // Keep this if you need to retrieve it
         }
+
+        // Calculate the time in milliseconds for the alarm
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, alarm.time.split(":")[0].toInt()) // Use the hour part of your alarm
+            set(Calendar.MINUTE, alarm.time.split(":")[1].toInt())     // Use the minute part of your alarm
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            // Adjust for the next occurrence if the time has already passed today
+            if (timeInMillis < System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarm.id.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Schedule the alarm with the calculated time in milliseconds
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 
-
+    // Cancel a scheduled alarm
+    private fun cancelAlarm(alarm: Alarm) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarm.id.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager.cancel(pendingIntent) // Cancel the alarm
+    }
 }

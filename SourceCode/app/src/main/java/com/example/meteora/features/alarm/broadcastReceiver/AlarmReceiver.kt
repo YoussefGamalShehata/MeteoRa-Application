@@ -17,6 +17,15 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val alarmName = intent.getStringExtra("alarmName") ?: "Alarm"
 
+        val sharedPrefs = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE)
+        val temperature = sharedPrefs.getString("weather_temperature", "N/A")
+        val weatherDescription = sharedPrefs.getString("weather_description", "N/A")
+        val weatherCityName = sharedPrefs.getString("weather_city_name", "N/A")
+
+        val weatherInfo = "Temp: $temperature," +
+                          "Sky: $weatherDescription," +
+                          "City: $weatherCityName"
+
         Toast.makeText(context, "Alarm Triggered: $alarmName", Toast.LENGTH_LONG).show()
 
         val notificationManager =
@@ -45,8 +54,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Alarm")
-            .setContentText("Alarm Triggered: $alarmName")
+            .setContentTitle("Alarm Triggered: $alarmName")
+            .setContentText(weatherInfo) // Include weather information
             .setSound(alarmSound)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
