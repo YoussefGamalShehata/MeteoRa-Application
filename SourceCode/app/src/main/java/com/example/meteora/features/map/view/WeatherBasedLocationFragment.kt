@@ -10,17 +10,20 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.meteora.R
 import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
+import com.example.meteora.model.DailyForecast
 import com.example.meteora.model.Forcast
+import com.example.meteora.model.HourlyWeatherData
 import com.example.meteora.network.ApiClient
 import com.example.meteora.network.ApiState
 import com.example.meteora.network.RemoteDataSourceImpl
 import com.example.meteora.ui.home.HomeViewModel
 import kotlinx.coroutines.launch
-
 
 class WeatherBasedLocationFragment : DialogFragment() {
 
@@ -35,21 +38,26 @@ class WeatherBasedLocationFragment : DialogFragment() {
     private lateinit var dateTimeTextView: TextView
     private lateinit var cityNameTextView: TextView
 
-    // Pass latitude and longitude as arguments
+    private lateinit var pastHourlyRecyclerView: RecyclerView
+    private lateinit var futureDailyRecyclerView: RecyclerView
+
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Retrieve latitude and longitude from arguments
         arguments?.let {
             latitude = it.getDouble("latitude", 0.0)
             longitude = it.getDouble("longitude", 0.0)
         }
 
-        // Initialize ViewModel
-        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())))
+        val factory = HomeViewModelFactory(
+            RepositoryImpl(
+                RemoteDataSourceImpl.getInstance(ApiClient.retrofit),
+                LocalDataSourceImpl(requireContext())
+            )
+        )
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
     }
 
@@ -59,7 +67,6 @@ class WeatherBasedLocationFragment : DialogFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_weather_based_location, container, false)
 
-        // Initialize views
         progressBar = view.findViewById(R.id.progressBar)
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescriptionTextView)
         temperatureTextView = view.findViewById(R.id.tempTextView)
@@ -70,7 +77,12 @@ class WeatherBasedLocationFragment : DialogFragment() {
         dateTimeTextView = view.findViewById(R.id.dateTimeTextView)
         cityNameTextView = view.findViewById(R.id.cityNameTextView)
 
-        // Fetch weather data
+        pastHourlyRecyclerView = view.findViewById(R.id.pastHourlyRecyclerView)
+        futureDailyRecyclerView = view.findViewById(R.id.futureDailyRecyclerView)
+
+        pastHourlyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        futureDailyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         fetchWeatherData()
 
         return view
@@ -78,7 +90,7 @@ class WeatherBasedLocationFragment : DialogFragment() {
 
     private fun fetchWeatherData() {
         lifecycleScope.launch {
-            viewModel.fetchForecast(latitude, longitude, "metric", "ar") // Replace with actual units and language if needed
+            viewModel.fetchForecast(latitude, longitude, "metric", "ar")
             observeViewModel()
         }
     }
@@ -87,9 +99,7 @@ class WeatherBasedLocationFragment : DialogFragment() {
         lifecycleScope.launch {
             viewModel.forcastData.collect { state ->
                 when (state) {
-                    is ApiState.Loading -> {
-                        progressBar.visibility = View.VISIBLE
-                    }
+                    is ApiState.Loading -> progressBar.visibility = View.VISIBLE
                     is ApiState.Success<*> -> {
                         progressBar.visibility = View.GONE
                         when (val data = state.data) {
@@ -102,7 +112,35 @@ class WeatherBasedLocationFragment : DialogFragment() {
                                 pressureTextView.text = "Pressure: ${data.list[0].main.pressure} hPa"
                                 cloudsTextView.text = "Cloudiness: ${data.list[0].clouds.all} %"
                                 dateTimeTextView.text = "Date and Time: ${data.list[0].dtTxt}"
-                                cityNameTextView.text = data.city.name // Adjust based on your data model
+                                cityNameTextView.text = data.city.name
+
+                                // Prepare hourly and daily data for the adapters
+                                val hourlyData = data.list.take(12).map { forecast ->
+                                    HourlyWeatherData(
+                                        time = forecast.dtTxt,
+                                        temp = forecast.main.temp,
+                                        description = forecast.weather[0].description
+                                    )
+                                }
+
+                                val dailyData = data.list.groupBy { forecast ->
+                                    forecast.dtTxt.substring(0, 10)
+                                }.values.take(5).map { dayForecasts ->
+                                    val firstForecast = dayForecasts[0]
+                                    DailyForecast(
+                                        date = firstForecast.dtTxt.substring(0, 10),
+                                        maxTemp = dayForecasts.maxOf { it.main.tempMax },
+                                        minTemp = dayForecasts.minOf { it.main.tempMin }
+                                    )
+                                }
+
+                                // Submit data to adapters
+                                pastHourlyRecyclerView.adapter = PastHourlyWeatherAdapter().apply {
+                                    submitList(hourlyData)
+                                }
+                                futureDailyRecyclerView.adapter = FutureDailyWeatherAdapter().apply {
+                                    submitList(dailyData)
+                                }
                             }
                         }
                     }
@@ -137,5 +175,4 @@ class WeatherBasedLocationFragment : DialogFragment() {
         dateTimeTextView.visibility = View.VISIBLE
         cityNameTextView.visibility = View.VISIBLE
     }
-
 }
