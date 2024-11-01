@@ -99,7 +99,6 @@ class MapFragment : Fragment() {
             }
         }
 
-        // Collecting forecast data state
         viewLifecycleOwner.lifecycleScope.launch {
             locationViewModel.forecastData.collect { state ->
                 when (state) {
@@ -237,7 +236,7 @@ class MapFragment : Fragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupMap() // Retry setting up the map if permission is granted
+                setupMap()
             } else {
                 Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
             }

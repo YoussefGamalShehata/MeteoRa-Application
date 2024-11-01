@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
@@ -33,7 +34,15 @@ class AddAlarmDialogFragment(
     private lateinit var btnCancel: Button
     private lateinit var timeTypeTextView: TextView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    //var AlarmFlag = false
+    private lateinit var radioAlarm: Button
+    private lateinit var radioNotification: Button
+//    public fun setAlarmFlag(flag: Boolean) {
+//        AlarmFlag = flag
+//    }
+//    public fun getAlarmFlag(): Boolean {
+//        return AlarmFlag
+//    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +53,8 @@ class AddAlarmDialogFragment(
         btnAdd = view.findViewById(R.id.btnAddAlarm)
         btnCancel = view.findViewById(R.id.btnCancel)
         timeTypeTextView = view.findViewById(R.id.timeTypeTextView)
+        radioAlarm = view.findViewById(R.id.radioAlarm)
+        radioNotification = view.findViewById(R.id.radioNotification)
 
         timePicker.setIs24HourView(false)
         updateTimeType()
@@ -60,11 +71,10 @@ class AddAlarmDialogFragment(
 
             // Fetch weather data using the current location
             fetchCurrentLocation { latitude, longitude ->
-                homeViewModel.fetchCurrentWeather(latitude, longitude, "metric", "en")
+                homeViewModel.fetchCurrentWeather(latitude, longitude)
                 onAlarmAdded(alarmName, alarmTime)
                 dismiss()
             }
-
         }
 
         btnCancel.setOnClickListener {

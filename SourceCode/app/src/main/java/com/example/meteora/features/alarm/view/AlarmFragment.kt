@@ -43,7 +43,7 @@ class AlarmFragment : Fragment() {
         // Retrieve HomeViewModel from the ViewModelProvider
         homeViewModel = ViewModelProvider(
             this,
-            HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())))
+            HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())), requireContext())
         )[HomeViewModel::class.java]
 
         // Pass HomeViewModel when creating AlarmViewModel
@@ -67,7 +67,6 @@ class AlarmFragment : Fragment() {
             }, homeViewModel) // Pass the HomeViewModel instance
             dialog.show(parentFragmentManager, "AddAlarmDialog")
         }
-
 
 
         lifecycleScope.launchWhenStarted {

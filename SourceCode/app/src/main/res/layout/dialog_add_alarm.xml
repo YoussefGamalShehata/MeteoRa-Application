@@ -31,6 +31,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Alarm" />
+    <RadioGroup
+        android:id="@+id/radioGroupChoice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm" />
+
+        <RadioButton
+            android:id="@+id/radioNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/btnCancel"

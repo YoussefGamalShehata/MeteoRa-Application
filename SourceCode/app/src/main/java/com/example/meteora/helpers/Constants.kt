@@ -3,7 +3,9 @@ package com.example.meteora.helpers
 object Constants {
     const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
     const val API_KEY = "8e05d4d97944156ecbd0645bf68e7826"
-    const val UNITS = "metric"
+    const val UNITS_METRIC = "metric"
+    const val UNITS_IMPERIAL = "imperial"
+    const val UNITS_STANDARD = "standard"
     const val ALARM_CHANNEL_ID = "ALARM_CHANNEL"
     const val LANGUAGE_SHARED = "Language"
     const val TEMP_UNIT_SHARED = "TempUnit"

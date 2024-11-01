@@ -1,60 +1,72 @@
+// SettingFragment.kt
 package com.example.meteora.features.settings.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import androidx.fragment.app.Fragment
 import com.example.meteora.R
+import com.example.meteora.data.SettingControl
+import com.example.meteora.helpers.Constants
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var settingControl: SettingControl
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false)
+        val view = inflater.inflate(R.layout.fragment_setting, container, false)
+        settingControl = SettingControl(requireContext())
+
+        // Initialize UI components
+        setupTemperatureUnitRadioButtons(view)
+        setupWindSpeedUnitRadioButtons(view)
+        setupLanguageRadioButtons(view)
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun setupTemperatureUnitRadioButtons(view: View) {
+        val radioCelsius: RadioButton = view.findViewById(R.id.radioCelsius)
+        val radioFahrenheit: RadioButton = view.findViewById(R.id.radioFahrenheit)
+        val radioKelvin: RadioButton = view.findViewById(R.id.radioKelvin)
+
+        // Load and set initial state
+        radioCelsius.isChecked = settingControl.getTemperatureUnit() == Constants.CELSIUS_SHARED
+        radioFahrenheit.isChecked = settingControl.getTemperatureUnit() == Constants.FAHRENHEIT_SHARED
+        radioKelvin.isChecked = settingControl.getTemperatureUnit() == Constants.KELVIN_SHARED
+
+        radioCelsius.setOnClickListener { settingControl.setTemperatureUnit(Constants.CELSIUS_SHARED) }
+        radioFahrenheit.setOnClickListener { settingControl.setTemperatureUnit(Constants.FAHRENHEIT_SHARED) }
+        radioKelvin.setOnClickListener { settingControl.setTemperatureUnit(Constants.KELVIN_SHARED) }
+    }
+
+    private fun setupWindSpeedUnitRadioButtons(view: View) {
+        val radioMeterPerSecond: RadioButton = view.findViewById(R.id.radioMeterPerSecond)
+        val radioMilesPerHour: RadioButton = view.findViewById(R.id.radioMilesPerHour)
+
+        // Load and set initial state
+        radioMeterPerSecond.isChecked = settingControl.getWindSpeedUnit() == Constants.UNITS_METRIC
+        radioMilesPerHour.isChecked = settingControl.getWindSpeedUnit() == Constants.UNITS_IMPERIAL
+
+        radioMeterPerSecond.setOnClickListener { settingControl.setWindSpeedUnit(Constants.UNITS_METRIC) }
+        radioMilesPerHour.setOnClickListener { settingControl.setWindSpeedUnit(Constants.UNITS_IMPERIAL) }
+    }
+
+    private fun setupLanguageRadioButtons(view: View) {
+        val radioEnglish: RadioButton = view.findViewById(R.id.radioEnglish)
+        val radioArabic: RadioButton = view.findViewById(R.id.radioArabic)
+
+        // Load and set initial state
+        radioEnglish.isChecked = settingControl.getLanguage() == Constants.ENGLISH_SHARED
+        radioArabic.isChecked = settingControl.getLanguage() ==  Constants.ARABIC_SHARED
+
+        radioEnglish.setOnClickListener { settingControl.setLanguage("en") }
+        radioArabic.setOnClickListener { settingControl.setLanguage("ar") }
     }
 }

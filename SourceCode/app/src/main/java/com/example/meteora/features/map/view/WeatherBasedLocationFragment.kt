@@ -56,7 +56,7 @@ class WeatherBasedLocationFragment : DialogFragment() {
             RepositoryImpl(
                 RemoteDataSourceImpl.getInstance(ApiClient.retrofit),
                 LocalDataSourceImpl(requireContext())
-            )
+            ), requireContext()
         )
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
     }
@@ -90,14 +90,14 @@ class WeatherBasedLocationFragment : DialogFragment() {
 
     private fun fetchWeatherData() {
         lifecycleScope.launch {
-            viewModel.fetchForecast(latitude, longitude, "metric", "ar")
+            viewModel.fetchForecast(latitude, longitude)
             observeViewModel()
         }
     }
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.forcastData.collect { state ->
+            viewModel.forecastData.collect { state ->
                 when (state) {
                     is ApiState.Loading -> progressBar.visibility = View.VISIBLE
                     is ApiState.Success<*> -> {

@@ -31,6 +31,7 @@ import com.example.meteora.network.RemoteDataSourceImpl
 import com.example.meteora.ui.home.HomeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -73,8 +74,6 @@ class HomeFragment : Fragment() {
         cityNameTextView = view.findViewById(R.id.cityNameTextView)
         chooseLocationButton = view.findViewById(R.id.chooseLocationButton)
 
-
-
         // Initialize RecyclerViews and Adapters
         hourlyRecyclerView = view.findViewById(R.id.hourlyRecyclerView)
         dailyRecyclerView = view.findViewById(R.id.dailyRecyclerView)
@@ -88,7 +87,7 @@ class HomeFragment : Fragment() {
         hourlyRecyclerView.adapter = hourlyWeatherAdapter
         dailyRecyclerView.adapter = dailyWeatherAdapter
 
-        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())))
+        val factory = HomeViewModelFactory(RepositoryImpl(RemoteDataSourceImpl.getInstance(ApiClient.retrofit), LocalDataSourceImpl(requireContext())), requireContext())
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -98,8 +97,8 @@ class HomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission()
         } else {
             fetchLocationAndInitializeWeatherData()
@@ -142,40 +141,57 @@ class HomeFragment : Fragment() {
 
     private fun initializeWeatherData(lat: Double, lon: Double) {
         observeViewModel()
-        viewModel.fetchForecast(lat, lon, "metric", "ar")
+        viewModel.fetchCurrentWeather(lat, lon)
+        viewModel.fetchForecast(lat, lon)
     }
 
     @SuppressLint("SetTextI18n")
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.forcastData.collect { state ->
-                when (state) {
-                    is ApiState.Loading -> {
-                        progressBar.visibility = View.VISIBLE
-                    }
-                    is ApiState.Success<*> -> {
-                        progressBar.visibility = View.GONE
-                        when (val data = state.data) {
-                            is Weather -> {
-                                showWeatherViews()
-                                temperatureTextView.text = "${data.main.temp} °C"
-                                humidityTextView.text = "${data.main.humidity}%"
-                                windSpeedTextView.text = "${data.wind.speed} m/s"
-                                pressureTextView.text = "${data.main.pressure} hPa"
-                                cloudsTextView.text = "${data.clouds.all} %"
+            launch {
+                viewModel.weatherData.collect { state ->
+                    when (state) {
+                        is ApiState.Loading -> {
+                            progressBar.visibility = View.VISIBLE
+                        }
+                        is ApiState.Success<*> -> {
+                            progressBar.visibility = View.GONE
+                            when (val data = state.data) {
+                                is Weather -> {
+                                    showWeatherViews()
+                                    temperatureTextView.text = "${data.main.temp} °C"
+                                    humidityTextView.text = "Humidity: ${data.main.humidity}%"
+                                    windSpeedTextView.text = "Wind Speed: ${data.wind.speed} m/s"
+                                    pressureTextView.text = "Pressure: ${data.main.pressure} hPa"
+                                    cloudsTextView.text = "Cloudiness: ${data.clouds.all} %"
+                                }
                             }
-                            is Forcast -> {
-                                showWeatherViews()
-                                weatherDescriptionTextView.text = data.list[0].weather[0].description.capitalize()
-                                temperatureTextView.text = "${data.list[0].main.temp} °C"
-                                humidityTextView.text = "Humidity: ${data.list[0].main.humidity} %"
-                                windSpeedTextView.text = "Wind Speed: ${data.list[0].wind.speed} m/s"
-                                pressureTextView.text = "Pressure: ${data.list[0].main.pressure} hPa"
-                                cloudsTextView.text = "Cloudiness: ${data.list[0].clouds.all} %"
-                                dateTimeTextView.text = "Date and Time: ${data.list[0].dtTxt}"
-                                cityNameTextView.text = data.city.country
+                        }
+                        is ApiState.Failure -> {
+                            progressBar.visibility = View.GONE
+                            hideWeatherViews()
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
 
-                                val hourlyData = data.list.take(12).map { forecast ->
+            launch {
+                viewModel.forecastData.collect { state ->
+                    when (state) {
+                        is ApiState.Loading -> {
+                            progressBar.visibility = View.VISIBLE
+                        }
+                        is ApiState.Success<*> -> {
+                            progressBar.visibility = View.GONE
+                            if (state.data is Forcast) {
+                                showWeatherViews()
+                                weatherDescriptionTextView.text = state.data.list[0].weather[0].description.capitalize()
+                                dateTimeTextView.text = "Date and Time: ${state.data.list[0].dtTxt}"
+                                cityNameTextView.text = state.data.city.name
+
+                                // Prepare hourly and daily data for adapters
+                                val hourlyData = state.data.list.take(12).map { forecast ->
                                     HourlyWeatherData(
                                         time = forecast.dtTxt,
                                         temp = forecast.main.temp,
@@ -183,7 +199,7 @@ class HomeFragment : Fragment() {
                                     )
                                 }
 
-                                val dailyData = data.list.groupBy { forecast ->
+                                val dailyData = state.data.list.groupBy { forecast ->
                                     forecast.dtTxt.substring(0, 10)
                                 }.values.take(5).map { dayForecasts ->
                                     val firstForecast = dayForecasts[0]
@@ -198,11 +214,11 @@ class HomeFragment : Fragment() {
                                 dailyWeatherAdapter.submitList(dailyData)
                             }
                         }
-                    }
-                    is ApiState.Failure -> {
-                        progressBar.visibility = View.GONE
-                        hideWeatherViews()
-                        Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        is ApiState.Failure -> {
+                            progressBar.visibility = View.GONE
+                            hideWeatherViews()
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

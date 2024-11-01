@@ -3,7 +3,6 @@ package com.example.meteora.features.favorites.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.meteora.model.Forcast
-import com.example.meteora.db.local.LocalDataSource
 import com.example.meteora.db.repository.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
