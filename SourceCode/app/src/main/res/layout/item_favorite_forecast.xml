@@ -1,33 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?attr/selectableItemBackground"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/rounded_corners_background"
+    android:elevation="4dp"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/location_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Location"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/temperature_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Temperature: 20°C"
-        android:textSize="16sp"
-        android:textColor="@color/black"/>
+        android:textColor="#142428"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_text" />
+
+    <ImageView
+        android:id="@+id/weather_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/weather_icon"
+        android:src="@drawable/maxtemp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/temperature_text" />
 
     <TextView
         android:id="@+id/description_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Clear Sky"
-        android:textSize="14sp" />
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/weather_icon" />
 
-</LinearLayout>
+    <ImageButton
+        android:id="@+id/details_button"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/details"
+        android:padding="12dp"
+        android:src="@drawable/details"
+        app:layout_constraintEnd_toStartOf="@id/weather_icon"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/weather_icon" />
+
+    <ImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/delete"
+        android:padding="12dp"
+        android:src="@drawable/trash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/details_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

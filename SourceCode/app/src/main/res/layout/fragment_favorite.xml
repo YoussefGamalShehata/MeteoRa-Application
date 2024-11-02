@@ -6,17 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@drawable/gradient_background"
     tools:context=".features.favorites.view.FavoriteFragment">
 
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorite Forecasts"
-        android:textSize="24sp"
-        android:textStyle="bold"
         android:layout_gravity="center"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="16dp"
+        android:text="Favorite Locations"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/no_favorites_text"
@@ -35,6 +37,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:background="@drawable/border_background"
         android:paddingBottom="16dp"/>
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.meteora.features.favorites.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.meteora.model.Forcast
@@ -23,22 +24,28 @@ class FavoriteViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    private fun addFavorite(forecast: Forcast) {
+    fun addFavorite(forecast: Forcast) {
         viewModelScope.launch {
-            repository.insertForecast(forecast)
-            loadFavorites()
+            if (!isFavorite(forecast)) {
+                repository.insertForecast(forecast)
+                loadFavorites()
+            } else {
+                Log.i("None", "City Already Exist in Favorites ")
+            }
         }
     }
 
-    private fun removeFavorite(forecast: Forcast) {
+    fun removeFavorite(forecast: Forcast) {
         viewModelScope.launch {
             repository.deleteForecast(forecast)
-            loadFavorites()
+            loadFavorites() // Reload favorites after removal
         }
     }
+
     private fun isFavorite(forecast: Forcast): Boolean {
-        return _favorites.value.contains(forecast)
+        return _favorites.value.any { it.city.name == forecast.city.name } // Check by city name
     }
+
     fun updateFavoriteStatus(forecast: Forcast) {
         if (isFavorite(forecast)) {
             removeFavorite(forecast)
@@ -46,7 +53,8 @@ class FavoriteViewModel(private val repository: Repository) : ViewModel() {
             addFavorite(forecast)
         }
     }
-    fun getFavoriteById(id: Int): Forcast? {
-        return _favorites.value.find { it.list[0].weather[0].id.toInt() == id }
+
+    fun getFavoriteByCityName(city: String): Forcast? {
+        return _favorites.value.find { it.city.name == city }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.meteora.features.favorites.view
 
-import FavoritesAdapter
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,18 +10,25 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meteora.R
+import com.example.meteora.data.SettingControl
 import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.favorites.viewModel.FavoriteViewModel
 import com.example.meteora.features.favorites.viewModel.FavoriteViewModelFactory
+import com.example.meteora.model.Forcast
 import com.example.meteora.network.ApiClient
 import com.example.meteora.network.RemoteDataSourceImpl
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavoriteFragment : Fragment() {
+class FavoriteFragment(private val settingControl: SettingControl) : Fragment() {
     private lateinit var viewModel: FavoriteViewModel
-    private val favoritesAdapter = FavoritesAdapter()
+
+    private val favoritesAdapter by lazy {
+        FavoritesAdapter { forecast ->
+            viewModel.removeFavorite(forecast)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,5 +57,9 @@ class FavoriteFragment : Fragment() {
                 favoritesAdapter.submitList(favorites)
             }
         }
+    }
+
+    fun addFavorite(forecast: Forcast) {
+        viewModel.addFavorite(forecast)
     }
 }

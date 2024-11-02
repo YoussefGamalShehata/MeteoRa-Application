@@ -223,11 +223,9 @@ class HomeFragment : Fragment() {
                                         lottieAnimationView1.loop(true);
                                     }
 
-                                    // Rest of the weather data assignments
                                     if (settingControl.getLanguage() == "ar") {
                                         val arabicLocale = Locale("ar", "EG")  // Locale for Arabic (Egypt)
 
-                                        // Format humidity and pressure for Arabic display
                                         val humidity = NumberFormat.getInstance(arabicLocale).format(data.main.humidity)
                                         val pressure = NumberFormat.getInstance(arabicLocale).format(data.main.pressure)
 

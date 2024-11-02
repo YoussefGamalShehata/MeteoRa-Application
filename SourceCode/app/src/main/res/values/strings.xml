@@ -20,4 +20,7 @@
     <string name="coluds">Clouds:</string>
     <string name="wind1">Wind:</string>
     <string name="pressure1">Pressure:</string>
+    <string name="d">details</string>
+    <string name="details">detalis</string>
+    <string name="delete">delete</string>
 </resources>
