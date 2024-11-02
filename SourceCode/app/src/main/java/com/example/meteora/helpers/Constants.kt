@@ -17,7 +17,7 @@ object Constants {
     const val FAVOURITE_SHARED_CITY = "CITY_KEY"
     const val HOME_SCREEN_SHARED_PREFS_NAME = "homeScreen"
     const val OFFLINE_SHARED_PREFS_NAME = "OfflineHomeScreenData"
-    const val TEMPERATURE_FORMAT = "%.0f°%s"
+    const val TEMPERATURE_FORMAT = "%.0f%s"
     const val METER_PER_SECOND = "Meter/Second"
     const val CELSIUS_SHARED = "Celsius"
     const val FAHRENHEIT_SHARED = "Fahrenheit"

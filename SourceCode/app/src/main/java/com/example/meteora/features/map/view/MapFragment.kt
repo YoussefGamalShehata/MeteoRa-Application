@@ -43,7 +43,6 @@ class MapFragment : Fragment() {
 
     private lateinit var mapView: MapView
     private lateinit var geocoder: Geocoder
-    private lateinit var progressBar: ProgressBar
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var searchBar: EditText
@@ -66,7 +65,6 @@ class MapFragment : Fragment() {
         locationViewModel = LocationViewModelFactory(repository).create(LocationViewModel::class.java)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         mapView = view.findViewById(R.id.map_view)
-        progressBar = view.findViewById(R.id.progress_bar)
         searchBar = view.findViewById(R.id.search_bar) // Initialize searchBar
         showWeatherDetailsButton = view.findViewById(R.id.showWeatherDetailsButton)
         addToFavoriteButton = view.findViewById(R.id.addToFavoritesButton)
@@ -79,7 +77,6 @@ class MapFragment : Fragment() {
 
         showWeatherDetailsButton.setOnClickListener {
             selectedMarker?.position?.let { showWeatherDialog(it) }
-            toggleActionButtons(false)
         }
 
         addToFavoriteButton.setOnClickListener {
@@ -103,14 +100,14 @@ class MapFragment : Fragment() {
             locationViewModel.forecastData.collect { state ->
                 when (state) {
                     is ApiState.Loading -> {
-                        progressBar.visibility = View.VISIBLE
+
                     }
                     is ApiState.Success -> {
-                        progressBar.visibility = View.GONE
+
                         handleForecastData(state.data) // Handle the successful data
                     }
                     is ApiState.Failure -> {
-                        progressBar.visibility = View.GONE
+
                         Toast.makeText(context, "Error: ${state.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -170,7 +167,7 @@ class MapFragment : Fragment() {
     }
 
     private fun fetchLocationByName(locationName: String) {
-        progressBar.visibility = View.VISIBLE
+
         lifecycleScope.launch {
             try {
                 val addressList = geocoder.getFromLocationName(locationName, 1)
@@ -185,7 +182,7 @@ class MapFragment : Fragment() {
             } catch (e: Exception) {
                 Toast.makeText(context, "Error retrieving location", Toast.LENGTH_SHORT).show()
             } finally {
-                progressBar.visibility = View.GONE
+
             }
         }
     }

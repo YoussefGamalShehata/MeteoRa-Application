@@ -1,14 +1,14 @@
 <!-- res/drawable/hollow_oval_background.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
+    android:shape="rectangle"> <!-- Changed to rectangle -->
 
-    <solid android:color="@android:color/transparent" /> <!-- Transparent interior -->
+    <solid android:color="@android:color/transparent" />
 
     <stroke
         android:width="2dp"
-        android:color="@color/fillCard" />
-
+        android:color="#f4f4f4" />
+    <corners android:radius="16dp" />
     <size
-        android:width="200dp"
-        android:height="100dp" />
+        android:width="100dp"
+    android:height="200dp" />
 </shape>

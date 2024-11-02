@@ -50,12 +50,5 @@
             android:text="Add to Favorite" />
     </LinearLayout>
 
-    <!-- ProgressBar centered on the screen, hidden by default -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
 
 </FrameLayout>

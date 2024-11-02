@@ -25,7 +25,6 @@ class DailyWeatherListAdapter(
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val dailyForecast = getItem(position)
 
-        // Get temperature unit and convert temperatures accordingly
         val unit = settingControl.getTemperatureUnit()
         val maxTemp = convertTemperature(dailyForecast.maxTemp, unit)
         val minTemp = convertTemperature(dailyForecast.minTemp, unit)
@@ -54,7 +53,6 @@ class DailyWeatherListAdapter(
         }
     }
 
-    // Converts temperature based on selected unit
     private fun convertTemperature(tempInCelsius: Double, unit: String): Double {
         return when (unit) {
             CELSIUS_SHARED -> tempInCelsius
@@ -64,7 +62,6 @@ class DailyWeatherListAdapter(
         }
     }
 
-    // Helper function to get the symbol of the temperature unit
     private fun getUnitSymbol(unit: String): String {
         return when (unit) {
             CELSIUS_SHARED -> "°C"

@@ -13,4 +13,11 @@
     <string name="cloud">cloud</string>
     <string name="min_temp_icon">min_temp_icon</string>
     <string name="max_temp_icon">max_temp_icon</string>
+    <string name="sunrise">sunrise</string>
+    <string name="sunset">sunset</string>
+    <string name="choose_location">choosefrommap</string>
+    <string name="humidity1">Humidity:</string>
+    <string name="coluds">Clouds:</string>
+    <string name="wind1">Wind:</string>
+    <string name="pressure1">Pressure:</string>
 </resources>

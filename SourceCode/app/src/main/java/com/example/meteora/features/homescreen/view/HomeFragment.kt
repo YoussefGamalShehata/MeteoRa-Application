@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -16,12 +16,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import com.example.meteora.R
 import com.example.meteora.data.SettingControl
 import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
 import com.example.meteora.features.map.view.MapFragment
+import com.example.meteora.helpers.Constants.CELSIUS_SHARED
+import com.example.meteora.helpers.Constants.FAHRENHEIT_SHARED
+import com.example.meteora.helpers.Constants.KELVIN_SHARED
 import com.example.meteora.model.DailyForecast
 import com.example.meteora.model.Forcast
 import com.example.meteora.model.HourlyWeatherData
@@ -32,8 +37,10 @@ import com.example.meteora.network.RemoteDataSourceImpl
 import com.example.meteora.ui.home.HomeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
+
 
 class HomeFragment : Fragment() {
 
@@ -43,13 +50,14 @@ class HomeFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var weatherDescriptionTextView: TextView
     private lateinit var temperatureTextView: TextView
-    private lateinit var humidityTextView: TextView
-    private lateinit var windSpeedTextView: TextView
-    private lateinit var pressureTextView: TextView
-    private lateinit var cloudsTextView: TextView
+    private lateinit var lottieAnimationView: LottieAnimationView
+    private lateinit var lottieAnimationView1: LottieAnimationView
     private lateinit var dateTimeTextView: TextView
     private lateinit var cityNameTextView: TextView
-    private lateinit var chooseLocationButton: Button
+    private lateinit var  tv_humidity: TextView
+    private lateinit var  tv_pressure: TextView
+    private lateinit var  tv_wind: TextView
+    private lateinit var  tv_cloud: TextView
 
     private lateinit var hourlyRecyclerView: RecyclerView
     private lateinit var dailyRecyclerView: RecyclerView
@@ -63,18 +71,21 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
+        lottieAnimationView1 = view.findViewById(R.id.lottieAnimationView1);
+        lottieAnimationView.setAnimation(R.raw.mapchoose);
+        lottieAnimationView.setRepeatCount(LottieDrawable.INFINITE);
+        lottieAnimationView.playAnimation();
         settingControl = SettingControl(requireContext())
-        // Initialize views
         progressBar = view.findViewById(R.id.progressBar)
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescriptionTextView)
-        temperatureTextView = view.findViewById(R.id.tempTextView)
-        humidityTextView = view.findViewById(R.id.humidityTextView)
-        windSpeedTextView = view.findViewById(R.id.windSpeedTextView)
-        pressureTextView = view.findViewById(R.id.pressureTextView)
-        cloudsTextView = view.findViewById(R.id.cloudsTextView)
+           temperatureTextView = view.findViewById(R.id.tempTextView)
         dateTimeTextView = view.findViewById(R.id.dateTimeTextView)
         cityNameTextView = view.findViewById(R.id.cityNameTextView)
-        chooseLocationButton = view.findViewById(R.id.chooseLocationButton)
+        tv_humidity = view.findViewById(R.id.tv_humidity_value)
+        tv_pressure = view.findViewById(R.id.tv_pressure_value)
+        tv_wind = view.findViewById(R.id.tv_wind_value)
+        tv_cloud = view.findViewById(R.id.tv_cloud_value)
 
         // Initialize RecyclerViews and Adapters
         hourlyRecyclerView = view.findViewById(R.id.hourlyRecyclerView)
@@ -93,7 +104,7 @@ class HomeFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        chooseLocationButton.setOnClickListener {
+        lottieAnimationView.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, MapFragment())
                 .addToBackStack(null)
@@ -161,11 +172,100 @@ class HomeFragment : Fragment() {
                             when (val data = state.data) {
                                 is Weather -> {
                                     showWeatherViews()
-                                    temperatureTextView.text = "${data.main.temp} °C"
-                                    humidityTextView.text = "Humidity: ${data.main.humidity}%"
-                                    windSpeedTextView.text = "Wind Speed: ${data.wind.speed} m/s"
-                                    pressureTextView.text = "Pressure: ${data.main.pressure} hPa"
-                                    cloudsTextView.text = "Cloudiness: ${data.clouds.all} %"
+                                    val tempUnit = settingControl.getTemperatureUnit()
+                                    val convertedTemp = convertTemperature(data.main.temp, tempUnit).toInt()
+                                    temperatureTextView.text = when (tempUnit) {
+                                        CELSIUS_SHARED -> "$convertedTemp °C"
+                                        FAHRENHEIT_SHARED -> "$convertedTemp °F"
+                                        KELVIN_SHARED -> "$convertedTemp °K"
+                                        else -> "$convertedTemp °C"
+                                    }
+                                    if(data.weather[0].description == "clear sky")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.clearsky);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else if(data.weather[0].description == "few clouds")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.cold);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else if(data.weather[0].description == "scattered clouds")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.scattled);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else if (data.weather[0].description == "broken clouds")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.scattled);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else if(data.weather[0].description == "shower rain")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.rain);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else if(data.weather[0].description == "rain")
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.rain);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+                                    else
+                                    {
+                                        lottieAnimationView1.setAnimation(R.raw.clearsky);
+                                        lottieAnimationView1.playAnimation();
+                                        lottieAnimationView1.loop(true);
+                                    }
+
+                                    // Rest of the weather data assignments
+                                    if (settingControl.getLanguage() == "ar") {
+                                        val arabicLocale = Locale("ar", "EG")  // Locale for Arabic (Egypt)
+
+                                        // Format humidity and pressure for Arabic display
+                                        val humidity = NumberFormat.getInstance(arabicLocale).format(data.main.humidity)
+                                        val pressure = NumberFormat.getInstance(arabicLocale).format(data.main.pressure)
+
+                                        tv_humidity.text = "$humidity %"
+                                        tv_pressure.text = "$pressure hPa"  // You could replace "hPa" with Arabic if needed
+                                    } else {
+                                        // Use default English display
+                                        tv_humidity.text = "${data.main.humidity} %"
+                                        tv_pressure.text = "${data.main.pressure} hPa"
+                                    }
+                                    tv_wind.text = if (settingControl.getWindSpeedUnit() == "metric") {
+                                        if (settingControl.getLanguage() == "ar") {
+                                            val arabicLocale = Locale("ar", "EG")  // Locale for Arabic (Egypt)
+                                            val windSpeed = NumberFormat.getInstance(arabicLocale).format(data.wind.speed)
+                                            "$windSpeed م/ث"
+                                        }
+                                        else{
+                                            "${data.wind.speed} mph"
+                                        }
+                                    } else {
+                                        if (settingControl.getLanguage() == "ar") {
+                                            val arabicLocale = Locale("ar", "EG")  // Locale for Arabic (Egypt)
+                                            val windSpeed = NumberFormat.getInstance(arabicLocale).format(data.wind.speed)
+                                            "$windSpeed ميل/ساعة"
+                                        }
+                                        else{
+                                            "${data.wind.speed} mph"
+                                        }
+                                    }
+                                    if (settingControl.getLanguage() == "ar") {
+                                        val arabicLocale = Locale("ar", "eg")  // Locale for Arabic (Egypt)
+                                        val cloudPercentage = NumberFormat.getInstance(arabicLocale).format(data.clouds.all)
+                                        tv_cloud.text = "$cloudPercentage %"
+                                    }
+                                    else{
+                                        tv_cloud.text = "${data.clouds.all} %"
+                                        }
+
                                 }
                             }
                         }
@@ -189,14 +289,16 @@ class HomeFragment : Fragment() {
                             if (state.data is Forcast) {
                                 showWeatherViews()
                                 weatherDescriptionTextView.text = state.data.list[0].weather[0].description.capitalize()
-                                dateTimeTextView.text = "Date and Time: ${state.data.list[0].dtTxt}"
+                                dateTimeTextView.text = "Date : ${state.data.list[0].dtTxt.substring(0, 10)}"
                                 cityNameTextView.text = state.data.city.name
 
-                                // Prepare hourly and daily data for adapters
+
                                 val hourlyData = state.data.list.take(12).map { forecast ->
+                                    val temp = convertTemperature(forecast.main.temp, settingControl.getTemperatureUnit())
+
                                     HourlyWeatherData(
-                                        time = forecast.dtTxt,
-                                        temp = forecast.main.temp,
+                                        time =forecast.dtTxt.substring(11, 16),
+                                        temp,
                                         description = forecast.weather[0].description
                                     )
                                 }
@@ -226,28 +328,36 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     private fun hideWeatherViews() {
         weatherDescriptionTextView.visibility = View.GONE
         temperatureTextView.visibility = View.GONE
-        humidityTextView.visibility = View.GONE
-        windSpeedTextView.visibility = View.GONE
-        pressureTextView.visibility = View.GONE
-        cloudsTextView.visibility = View.GONE
+        tv_humidity.visibility = View.GONE
+        tv_pressure.visibility = View.GONE
+        tv_wind.visibility = View.GONE
+        tv_cloud.visibility = View.GONE
         dateTimeTextView.visibility = View.GONE
         cityNameTextView.visibility = View.GONE
-        chooseLocationButton.visibility = View.GONE
+        lottieAnimationView.visibility = View.GONE
     }
 
     private fun showWeatherViews() {
         weatherDescriptionTextView.visibility = View.VISIBLE
         temperatureTextView.visibility = View.VISIBLE
-        humidityTextView.visibility = View.VISIBLE
-        windSpeedTextView.visibility = View.VISIBLE
-        pressureTextView.visibility = View.VISIBLE
-        cloudsTextView.visibility = View.VISIBLE
+        tv_humidity.visibility = View.VISIBLE
+        tv_pressure.visibility = View.VISIBLE
+        tv_wind.visibility = View.VISIBLE
+        tv_cloud.visibility = View.VISIBLE
         dateTimeTextView.visibility = View.VISIBLE
         cityNameTextView.visibility = View.VISIBLE
-        chooseLocationButton.visibility = View.VISIBLE
+        lottieAnimationView.visibility = View.VISIBLE
     }
+    private fun convertTemperature(tempInCelsius: Double, unit: String): Double {
+        return when (unit) {
+            CELSIUS_SHARED -> tempInCelsius
+            FAHRENHEIT_SHARED -> (tempInCelsius * 9 / 5) + 32
+            KELVIN_SHARED -> tempInCelsius + 273.15
+            else -> tempInCelsius
+        }
+    }
+
 }
