@@ -7,4 +7,10 @@
     <string name="cityNameTextView">CityNameTextView</string>
     <string name="back">Back</string>
     <string name="add">Add</string>
+    <string name="pressure">pressure</string>
+    <string name="humidity">humidity</string>
+    <string name="wind">wind</string>
+    <string name="cloud">cloud</string>
+    <string name="min_temp_icon">min_temp_icon</string>
+    <string name="max_temp_icon">max_temp_icon</string>
 </resources>

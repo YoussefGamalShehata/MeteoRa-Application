@@ -1,0 +1,14 @@
+<!-- res/drawable/hollow_oval_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@android:color/transparent" /> <!-- Transparent interior -->
+
+    <stroke
+        android:width="2dp"
+        android:color="@color/fillCard" />
+
+    <size
+        android:width="200dp"
+        android:height="100dp" />
+</shape>

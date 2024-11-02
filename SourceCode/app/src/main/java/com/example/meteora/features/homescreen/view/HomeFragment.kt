@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.meteora.R
+import com.example.meteora.data.SettingControl
 import com.example.meteora.db.local.LocalDataSourceImpl
 import com.example.meteora.db.repository.RepositoryImpl
 import com.example.meteora.features.homescreen.viewModel.HomeViewModelFactory
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
+    private lateinit var settingControl: SettingControl
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var progressBar: ProgressBar
     private lateinit var weatherDescriptionTextView: TextView
@@ -61,7 +63,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-
+        settingControl = SettingControl(requireContext())
         // Initialize views
         progressBar = view.findViewById(R.id.progressBar)
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescriptionTextView)
@@ -78,8 +80,8 @@ class HomeFragment : Fragment() {
         hourlyRecyclerView = view.findViewById(R.id.hourlyRecyclerView)
         dailyRecyclerView = view.findViewById(R.id.dailyRecyclerView)
 
-        hourlyWeatherAdapter = HourlyWeatherListAdapter()
-        dailyWeatherAdapter = DailyWeatherListAdapter()
+        hourlyWeatherAdapter = HourlyWeatherListAdapter(settingControl)
+        dailyWeatherAdapter = DailyWeatherListAdapter(settingControl)
 
         hourlyRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         dailyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
