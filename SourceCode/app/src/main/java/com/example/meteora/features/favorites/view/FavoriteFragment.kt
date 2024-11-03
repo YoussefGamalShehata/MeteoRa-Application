@@ -21,7 +21,7 @@ import com.example.meteora.network.RemoteDataSourceImpl
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavoriteFragment(private val settingControl: SettingControl) : Fragment() {
+class FavoriteFragment() : Fragment() {
     private lateinit var viewModel: FavoriteViewModel
 
     private val favoritesAdapter by lazy {
