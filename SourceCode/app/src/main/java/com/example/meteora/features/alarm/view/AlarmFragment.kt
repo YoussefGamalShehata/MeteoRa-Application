@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -27,8 +28,7 @@ class AlarmFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var alarmAdapter: AlarmAdapter
     private lateinit var alarmRecyclerView: RecyclerView
-    private lateinit var btnAddAlarm: Button
-    private lateinit var btnRemoveAlarm: Button
+    private lateinit var btnAddAlarm: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

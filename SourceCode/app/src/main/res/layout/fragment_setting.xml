@@ -2,6 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/gradient_background"
     android:padding="16dp">
 
     <LinearLayout
@@ -11,86 +13,148 @@
         android:padding="16dp">
 
         <!-- Temperature Unit Settings -->
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Temperature Units"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingBottom="8dp"/>
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:backgroundTint="#142428"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-        <RadioGroup
-            android:id="@+id/temperatureUnitGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioCelsius"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Celsius" />
-            <RadioButton
-                android:id="@+id/radioFahrenheit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fahrenheit" />
-            <RadioButton
-                android:id="@+id/radioKelvin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Kelvin" />
-        </RadioGroup>
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Temperature Units"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp"/>
+
+                <RadioGroup
+                    android:id="@+id/temperatureUnitGroup"
+                    android:layout_width="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/radioCelsius"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Celsius" />
+                    <RadioButton
+                        android:id="@+id/radioFahrenheit"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Fahrenheit" />
+                    <RadioButton
+                        android:id="@+id/radioKelvin"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Kelvin" />
+                </RadioGroup>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Wind Speed Unit Settings -->
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Wind Speed Units"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"/>
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:backgroundTint="#142428"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-        <RadioGroup
-            android:id="@+id/windSpeedUnitGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioMeterPerSecond"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Meter/sec" />
-            <RadioButton
-                android:id="@+id/radioMilesPerHour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Miles/hour" />
-        </RadioGroup>
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wind Speed Units"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp"/>
+
+                <RadioGroup
+                    android:id="@+id/windSpeedUnitGroup"
+                    android:layout_width="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/radioMeterPerSecond"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Meter/sec" />
+                    <RadioButton
+                        android:id="@+id/radioMilesPerHour"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Miles/hour" />
+                </RadioGroup>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Language Settings -->
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Language"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"/>
+            android:padding="16dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#142428"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-        <RadioGroup
-            android:id="@+id/languageGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioEnglish"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="English" />
-            <RadioButton
-                android:id="@+id/radioArabic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Arabic" />
-        </RadioGroup>
+                android:orientation="vertical">
+
+                <RadioGroup
+                    android:id="@+id/languageGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:text="Language"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radioEnglish"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="English" />
+                    <RadioButton
+                        android:id="@+id/radioArabic"
+                        android:layout_width="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Arabic" />
+                </RadioGroup>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Lottie Animation at the Bottom -->
 
     </LinearLayout>
 </ScrollView>

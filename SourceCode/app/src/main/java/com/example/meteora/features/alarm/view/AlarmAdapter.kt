@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -19,7 +20,7 @@ class AlarmAdapter(
     class AlarmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.alarmName)
         val time: TextView = itemView.findViewById(R.id.alarmTime)
-        val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+       // val deleteButton: ImageButton = itemView.findViewById(R.id.delete_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
@@ -29,11 +30,11 @@ class AlarmAdapter(
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         val alarm = getItem(position)
-        holder.name.text = alarm.name
+        holder.name.text = "Alarm is set at: "
         holder.time.text = alarm.time
-        holder.deleteButton.setOnClickListener {
-            onDelete(alarm)
-        }
+//        holder.deleteButton.setOnClickListener {
+//            onDelete(alarm)
+//        }
     }
 
     class AlarmDiffCallback : DiffUtil.ItemCallback<Alarm>() {
