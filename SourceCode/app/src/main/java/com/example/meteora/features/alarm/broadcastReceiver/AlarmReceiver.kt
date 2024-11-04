@@ -55,7 +55,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Alarm Triggered: $alarmName")
-            .setContentText(weatherInfo) // Include weather information
+            .setContentText(weatherInfo)
             .setSound(alarmSound)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)

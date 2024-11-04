@@ -76,11 +76,11 @@ class HomeViewModelTest {
             name = "",
             cod = 0
         )
-        fakeRepository.weatherResponse = mockCurrentWeather // Assign mock data
+        fakeRepository.weatherResponse = mockCurrentWeather
 
         // When
         homeViewModel.fetchCurrentWeather(latitude, longitude)
-        advanceUntilIdle() // Ensure all coroutines have completed
+        advanceUntilIdle()
 
         // Then
         val weatherData = homeViewModel.weatherData.value
@@ -91,43 +91,40 @@ class HomeViewModelTest {
     @Test
     fun fetchForecast_updatesForecastData() = runTest {
         // Given
-        val mockForecast = Forcast(/* initialize with mock data */)
-        fakeRepository.forecastResponse = mockForecast // Assign mock data
+        val mockForecast = Forcast()
+        fakeRepository.forecastResponse = mockForecast
 
         // When
         homeViewModel.fetchForecast(40.7128, -74.0060)
-        advanceUntilIdle() // Ensure all coroutines have completed
-
-        // Then
+        advanceUntilIdle()
         val forecastData = homeViewModel.forecastData.value
+        // Then
         assertThat(forecastData, equalTo(ApiState.Success(mockForecast)))
     }
 
     @Test
     fun fetchCurrentWeather_handlesError() = runTest {
         // Given
-        fakeRepository.weatherResponse = null // Ensure no weather data is provided
+        fakeRepository.weatherResponse = null
 
         // When
         homeViewModel.fetchCurrentWeather(40.7128, -74.0060)
-        advanceUntilIdle() // Ensure all coroutines have completed
-
-        // Then
+        advanceUntilIdle()
         val weatherData = homeViewModel.weatherData.value
+        // Then
         assertThat(weatherData is ApiState.Failure, equalTo(true))
     }
 
     @Test
     fun fetchForecast_handlesError() = runTest {
         // Given
-        fakeRepository.forecastResponse = null // Ensure no forecast data is provided
+        fakeRepository.forecastResponse = null
 
         // When
         homeViewModel.fetchForecast(40.7128, -74.0060)
-        advanceUntilIdle() // Ensure all coroutines have completed
-
-        // Then
+        advanceUntilIdle()
         val forecastData = homeViewModel.forecastData.value
+        // Then
         assertThat(forecastData is ApiState.Failure, equalTo(true))
     }
 }

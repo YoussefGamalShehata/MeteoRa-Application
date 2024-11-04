@@ -230,7 +230,7 @@ class HomeFragment : Fragment() {
                                         val pressure = NumberFormat.getInstance(arabicLocale).format(data.main.pressure)
 
                                         tv_humidity.text = "$humidity %"
-                                        tv_pressure.text = "$pressure hPa"  // You could replace "hPa" with Arabic if needed
+                                        tv_pressure.text = "$pressure  هيكتو"  // You could replace "hPa" with Arabic if needed
                                     } else {
                                         // Use default English display
                                         tv_humidity.text = "${data.main.humidity} %"

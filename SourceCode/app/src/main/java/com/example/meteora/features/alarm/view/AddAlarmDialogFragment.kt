@@ -25,7 +25,7 @@ import com.google.android.gms.tasks.Task
 
 class AddAlarmDialogFragment(
     private val onAlarmAdded: (String, String) -> Unit,
-    private val homeViewModel: HomeViewModel // Pass the HomeViewModel
+    private val homeViewModel: HomeViewModel
 ) : DialogFragment() {
 
     private lateinit var alarmNameInput: EditText
@@ -37,12 +37,7 @@ class AddAlarmDialogFragment(
     //var AlarmFlag = false
     private lateinit var radioAlarm: Button
     private lateinit var radioNotification: Button
-//    public fun setAlarmFlag(flag: Boolean) {
-//        AlarmFlag = flag
-//    }
-//    public fun getAlarmFlag(): Boolean {
-//        return AlarmFlag
-//    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +57,7 @@ class AddAlarmDialogFragment(
             updateTimeType(hour)
         }
 
-        // Initialize FusedLocationProviderClient
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         btnAdd.setOnClickListener {

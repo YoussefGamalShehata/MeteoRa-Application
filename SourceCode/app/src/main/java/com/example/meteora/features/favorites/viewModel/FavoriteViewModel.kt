@@ -38,12 +38,12 @@ class FavoriteViewModel(private val repository: Repository) : ViewModel() {
     fun removeFavorite(forecast: Forcast) {
         viewModelScope.launch {
             repository.deleteForecast(forecast)
-            loadFavorites() // Reload favorites after removal
+            loadFavorites()
         }
     }
 
     private fun isFavorite(forecast: Forcast): Boolean {
-        return _favorites.value.any { it.city.name == forecast.city.name } // Check by city name
+        return _favorites.value.any { it.city.name == forecast.city.name }
     }
 
     fun updateFavoriteStatus(forecast: Forcast) {

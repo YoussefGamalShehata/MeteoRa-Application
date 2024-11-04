@@ -49,14 +49,25 @@ class SettingFragment : Fragment() {
     private fun setupWindSpeedUnitRadioButtons(view: View) {
         val radioMeterPerSecond: RadioButton = view.findViewById(R.id.radioMeterPerSecond)
         val radioMilesPerHour: RadioButton = view.findViewById(R.id.radioMilesPerHour)
+        val radioFahrenheit: RadioButton = view.findViewById(R.id.radioFahrenheit)
 
         // Load and set initial state
         radioMeterPerSecond.isChecked = settingControl.getWindSpeedUnit() == Constants.UNITS_METRIC
         radioMilesPerHour.isChecked = settingControl.getWindSpeedUnit() == Constants.UNITS_IMPERIAL
 
-        radioMeterPerSecond.setOnClickListener { settingControl.setWindSpeedUnit(Constants.UNITS_METRIC) }
-        radioMilesPerHour.setOnClickListener { settingControl.setWindSpeedUnit(Constants.UNITS_IMPERIAL) }
+        radioMeterPerSecond.setOnClickListener {
+            settingControl.setWindSpeedUnit(Constants.UNITS_METRIC)
+        }
+
+        radioMilesPerHour.setOnClickListener {
+            settingControl.setWindSpeedUnit(Constants.UNITS_IMPERIAL)
+
+            // Check Fahrenheit when Miles/hour is selected
+            radioFahrenheit.isChecked = true
+            settingControl.setTemperatureUnit(Constants.FAHRENHEIT_SHARED)
+        }
     }
+
 
     private fun setupLanguageRadioButtons(view: View) {
         val radioEnglish: RadioButton = view.findViewById(R.id.radioEnglish)
